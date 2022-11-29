@@ -19,7 +19,10 @@ EXPOSE 3306
 
 ADD . .
 WORKDIR .
-CMD mysql -u $MYSQL_USER -p $MYSQL_PASSWORD $MYSQL_DATABASE < init.sql
+# CMD ["mysql", "-u", "root", "-p"]
+# CMD ["password"]
+# CMD ["source", "init.sql"]
+# CMD mysql -u $MYSQL_USER -p $MYSQL_PASSWORD $MYSQL_DATABASE
 
 # To build (in this working dir):
 # sudo docker build -t [PICK_CONTAINER_NAME] .
