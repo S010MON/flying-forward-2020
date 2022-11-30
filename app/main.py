@@ -2,7 +2,22 @@ import uvicorn
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List
+from mysql.connector import (connection)
+import mysql.connector
 
+# Docker config
+config = {'user': 'root',
+          'password': 'password',
+          'host': 'db',
+          'port': '3306',
+          'database': 'droneData'
+          }
+
+# Setup SQL connector
+cnx = mysql.connector.connect(**config)
+cursor = cnx.cursor()
+
+# Build REST API
 app = FastAPI()
 
 
@@ -17,6 +32,7 @@ class Position(BaseModel):
 
 
 class DataDump(BaseModel):
+    user_id: int
     map: str
     positions: List[Position] = []
 
@@ -31,11 +47,6 @@ class DataDump(BaseModel):
 @app.post("/data", status_code=200)
 def post_data(data: DataDump, request: Request):
     print(data)
-
-
-@app.post("/pos", status_code=200)
-def post_data(pos: Position, request: Request):
-    print(pos)
 
 
 if __name__ == '__main__':
