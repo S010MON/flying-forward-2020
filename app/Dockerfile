@@ -1,17 +1,21 @@
 # Start from the official Base Image
 FROM python:3.10
 
-# Set the working directory to the '/app' directory where code will live.
-WORKDIR /code
+# Update
+RUN apt-get -y update
+RUN apt-get -y install vim nano
 
 # Copy the file with the requirements to the '/app' directory.
-COPY requirements.txt /code/requirements.txt
+COPY requirements.txt .
 
 # Install requirements
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
+
+EXPOSE 5000
 
 # Copy all of the code from the origin to the docker mounted directory
-COPY ./app /code/app
+ADD . .
+WORKDIR .
 
 # Run the server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]

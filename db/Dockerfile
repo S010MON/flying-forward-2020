@@ -4,10 +4,8 @@
 FROM mysql:latest
 
 # Update
-# RUN apt-get -y update
-# RUN apt-get -y install vim nano
-
-COPY init.sql init.sql
+RUN apt-get -y update
+RUN apt-get -y install vim nano
 
 # Setup SQL environment
 ENV MYSQL_USER: root
