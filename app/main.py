@@ -10,7 +10,7 @@ config = {'user': 'root',
           'password': 'password',
           'host': 'db',
           'port': '3306',
-          'database': 'droneData'
+          'database': 'drone'
           }
 
 # Setup SQL connector

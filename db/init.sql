@@ -1,5 +1,5 @@
-CREATE DATABASE droneData;
-USE droneData;
+CREATE DATABASE IF NOT EXISTS drone;
+USE drone;
 
 CREATE TABLE Users (
     user_id INT AUTO_INCREMENT,

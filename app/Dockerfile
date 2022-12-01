@@ -1,6 +1,8 @@
 # Start from the official Base Image
 FROM python:3.10
 
+CMD ["sleep", "5"]
+
 # Update
 RUN apt-get -y update
 RUN apt-get -y install vim nano

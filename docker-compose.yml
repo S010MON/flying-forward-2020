@@ -9,10 +9,10 @@ services:
 
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: droneData
+      MYSQL_DATABASE: drone
 
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   app:
     build: ./app           # Where the Dockerfile is stored
