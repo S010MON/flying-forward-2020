@@ -21,6 +21,13 @@ cursor = cnx.cursor()
 app = FastAPI()
 
 
+class UserRequest(BaseModel):
+    age: int
+    flying_minutes: int
+    gender: str
+    licences: str
+
+
 class Position(BaseModel):
     time: int
     x: float
@@ -44,9 +51,34 @@ class DataDump(BaseModel):
         return s
 
 
+@app.post("/user", status_code=200)
+def new_user(user: UserRequest, request: Request):
+    # Insert new user
+    query = f"INSERT INTO Users (age, flying_minutes, gender, licences) VALUES (" \
+            f"{user.age}," \
+            f"{user.flying_minutes}," \
+            f"\"{user.gender}\"," \
+            f"\"{user.licences}\");"
+    cursor.execute(query)
+
+    # Fetch new user_id
+    query = "SELECT LAST_INSERT_ID()";
+    cursor.execute(query)
+    result = cursor.fetchone()
+    return {"user_id": result}
+
+
 @app.post("/data", status_code=200)
 def post_data(data: DataDump, request: Request):
-    print(data)
+    # generate a new session
+    query = f"INSERT INTO Sessions (user_id, map) VALUES ({data.user_id}, \"{data.map}\");"
+    cursor.execute(query)
+
+    # Fetch new session_id
+    query = "SELECT LAST_INSERT_ID()";
+    cursor.execute(query)
+    result = cursor.fetchone()
+    print(f"Created new session: {result}")
 
 
 if __name__ == '__main__':
