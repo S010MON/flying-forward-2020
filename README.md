@@ -13,11 +13,7 @@ if not installed -> install ![docker](https://docs.docker.com/get-docker/) and !
 <br/>
 
 ### Run Server
-Navigate to the `docker-flask-mySQL/` root directory
-
-Build the container:
-
-        sudo docker-compose build
+Navigate to the `flying-forward-2020-api/` root directory
         
 Run the container:
         
