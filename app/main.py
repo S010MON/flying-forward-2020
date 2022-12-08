@@ -51,6 +51,11 @@ class DataDump(BaseModel):
         return s
 
 
+@app.get("/", status_code=200)
+def root():
+    return "Welcome to Flying Forward 2020!"
+
+
 @app.post("/user", status_code=200)
 def new_user(user: UserRequest, request: Request):
     # Insert new user
