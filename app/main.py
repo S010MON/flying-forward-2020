@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
 from typing import List
 from mysql.connector import (connection)
@@ -21,32 +21,42 @@ cursor = cnx.cursor()
 app = FastAPI()
 
 
-class UserRequest(BaseModel):
+class UserData(BaseModel):
     age: int
-    flying_minutes: int
+    flying_exp_min: int
     gender: str
-    licences: str
+    license: str
 
 
-class Position(BaseModel):
-    time: int
-    x: float
-    y: float
-    z: float
+class Summary(BaseModel):
+    time_overflying_people_ms: int
+    number_overflown_people: int
+    min_dist_to_nearest_structure: float
+    min_dist_to_nearest_person: float
+    avg_dist_to_intruder: float
+    max_dist_to_start: float
+    gated_vul_points: int
 
-    def __str__(self):
-        return f"{self.time},{self.x},{self.y},{self.z}"
+class Vector(BaseModel):
+    time_ms: int
+    px: float
+    py: float
+    pz: float
+    vx: float
+    vy: float
+    vz: float
 
 
 class DataDump(BaseModel):
-    user_id: int
+    user_data: UserData
     map: str
-    positions: List[Position] = []
+    summary: Summary
+    vectors: List[Vector] = []
 
     def __str__(self):
         s = (self.map + "\n")
-        for pos in self.positions:
-            s += str(pos)
+        for v in self.vectors:
+            s += str(v)
             s += "\n"
         return s
 
@@ -56,34 +66,90 @@ def root():
     return "Welcome to Flying Forward 2020!"
 
 
-@app.post("/user", status_code=200)
-def new_user(user: UserRequest, request: Request):
-    # Insert new user
-    query = f"INSERT INTO Users (age, flying_minutes, gender, licences) VALUES (" \
-            f"{user.age}," \
-            f"{user.flying_minutes}," \
-            f"\"{user.gender}\"," \
-            f"\"{user.licences}\");"
-    cursor.execute(query)
-
-    # Fetch new user_id
-    query = "SELECT LAST_INSERT_ID()";
-    cursor.execute(query)
-    result = cursor.fetchone()
-    return {"user_id": result}
+counters = {}
 
 
-@app.post("/data", status_code=200)
-def post_data(data: DataDump, request: Request):
-    # generate a new session
-    query = f"INSERT INTO Sessions (user_id, map) VALUES ({data.user_id}, \"{data.map}\");"
+@app.on_event("startup")
+async def startup_event():
+    counters['test'] = 0
+
+
+@app.get("/", status_code=200)
+async def home():
+    return "Welcome to Flying Forward 2020"
+
+
+@app.get("/api/count", status_code=200)
+async def get_count():
+    counters['test'] += 1
+    return {"test_count", counters['test']}
+
+
+@app.post("/api/dump", status_code=200)
+async def post_data(d: DataDump, request: Request):
+
+    # Validate Age
+    if 0 < d.user_data.age < 100:
+        raise HTTPException(status_code=400, detail="Age outside of normal bounds")
+
+    if d.user_data.gender is not 'm' or d.user_data.gender is not 'f' or d.user_data.gender is not 'o':
+        raise HTTPException(status_code=400, detail="Gender must be male (m), female (f), or other (o)")
+
+    user_id = add_new_user(d)
+    for v in d.vectors:
+        add_vector(user_id, v)
+
+
+def add_new_user(d: DataDump):
+    """
+    Add a new user and return the integer user_id from the new user
+    """
+    query = f"INSERT INTO Users " \
+                f"(age, " \
+                f"flying_minutes, " \
+                f"gender, " \
+                f"licences, " \
+                f"time_overflying_people_ms, " \
+                f"number_overflown_people, " \
+                f"min_dist_to_nearest_structure, " \
+                f"min_dist_to_nearest_person, " \
+                f"avg_dist_to_intruder, "\
+                f"max_dist_to_start, " \
+                f"gated_vul_points)" \
+            f"VALUES " \
+                f"({d.user_data.age}, " \
+                f"{d.user_data.flying_exp_min}, " \
+                f"\"{d.user_data.gender}\", " \
+                f"\"{d.user_data.license}\", " \
+                f"{d.summary.time_overflying_people_ms}, " \
+                f"{d.summary.number_overflown_people}, " \
+                f"{d.summary.min_dist_to_nearest_structure}, " \
+                f"{d.summary.min_dist_to_nearest_person}, "\
+                f"{d.summary.avg_dist_to_intruder}, " \
+                f"{d.summary.max_dist_to_start}, " \
+                f"{d.summary.gated_vul_points}, " \
+                f"\"{d.map}\");"
     cursor.execute(query)
 
     # Fetch new session_id
     query = "SELECT LAST_INSERT_ID()";
     cursor.execute(query)
     result = cursor.fetchone()
-    print(f"Created new session: {result}")
+    return int(result)
+
+
+def add_vector(user_id: int, vector: Vector):
+    query = f"INSERT INTO Users (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES (" \
+            f"{user_id}," \
+            f"{vector.time_ms}" \
+            f"{vector.px}" \
+            f"{vector.py}"\
+            f"{vector.pz}" \
+            f"{vector.vx}" \
+            f"{vector.vy}" \
+            f"{vector.vz}" \
+            f");"
+    cursor.execute(query)
 
 
 if __name__ == '__main__':

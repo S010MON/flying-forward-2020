@@ -7,35 +7,37 @@ CREATE TABLE Users (
     flying_minutes INT,
     gender VARCHAR(1),
     licences VARCHAR(255),
+    time_overflying_people_ms INT,
+    number_overflown_people INT,
+    min_dist_to_nearest_structure DOUBLE,
+    min_dist_to_nearest_person DOUBLE,
+    avg_dist_to_intruder DOUBLE,
+    max_dist_to_start DOUBLE,
+    gated_vul_points INT,
     PRIMARY KEY (user_id)
     );
 
-CREATE TABLE Coordinates (
-    session_id INT NOT NULL,
-    time_ms INT NOT NULL,
-    x INT NOT NULL,
-    y INT NOT NULL,
-    z INT NOT NULL,
-    PRIMARY KEY (session_id, time_ms)
-    );
-
--- Sessions map Users to Coordinate sets
-CREATE TABLE Sessions (
-    session_id INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE Vectors (
     user_id INT NOT NULL,
-    map VARCHAR(255) NOT NULL,
-    PRIMARY KEY (session_id),
-    CONSTRAINT FK_user_id_to FOREIGN KEY (user_id) REFERENCES Users(user_id)
+    time_ms INT NOT NULL,
+    px DOUBLE NOT NULL,
+    py DOUBLE NOT NULL,
+    pz DOUBLE NOT NULL,
+    vx DOUBLE NOT NULL,
+    vy DOUBLE NOT NULL,
+    vz DOUBLE NOT NULL,
+    PRIMARY KEY (user_id, time_ms)
     );
 
-INSERT INTO Users (age, flying_minutes, gender, licences) VALUES (29, 10, "m", "a1 & a3"),
-                                                                 (18, 0, "f", null);
+INSERT INTO Users (age, flying_minutes, gender, licences) VALUES
+        (29, 10, "m", "a1 & a3"),
+        (18, 0, "f", null);
 
-INSERT INTO Sessions (user_id, map) VALUES (1, "intruder");
+INSERT INTO Vectors (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES
+        (1, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+        (1, 1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+        (1, 2, 0.4, 0.6, 0.8, 0.10, 0.12, 0.14),
+        (1, 3, 0.6, 0.9, 0.16, 0.15, 0.18, 0.21),
+        (1, 4, 0.8, 0.12, 0.20, 0.20, 0.24, 0.28);
 
-INSERT INTO Coordinates (session_id, time_ms, x, y, z) VALUES (1, 0, 0, 0, 0),
-                                                              (1, 1, 0, 10, 1),
-                                                              (1, 2, 0, 20, 2),
-                                                              (1, 3, 0, 30, 4),
-                                                              (1, 4, 0, 40, 8),
-                                                              (1, 5, 0, 50, 16);
+
