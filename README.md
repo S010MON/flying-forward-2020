@@ -23,47 +23,54 @@ Done!
 
 ## API Specification 
 
-### POST `/user` 
-
-#### Request:
+### POST `/api-dump` 
 ```json
 {
-  "age": 20,
-  "flying_minutes": 30,
-  "gender": "m",
-  "licences": "A1 & A3"
-}
-```
-#### Response:
-```json
-{
-  "user_id": 1
-}
-```
-
-### POST `/data` 
-```json
-{
-  "user_id": 1,
-  "map": "Intruder",
-  "positions": [
+  "user_data":
     {
-      "time": 0,
-      "x": 0,
-      "y": 0,
-      "z": 0
+      "age": 20,
+      "flying_experience_minutes": 30,
+      "gender": "m",
+      "license": "A1 & A3" 
+    },
+  "map": "Intruder",
+  "summary": 
+    {
+      "total_time_overflying_people_ms": 34,
+      "total_number_overflown_people": 399,
+      "smallest_distance_to_nearest_critical_structure": 60.4,
+      "smallest_distance_to_nearest_person": 50.3,
+      "avg_distance_to_intruder": 39.4,
+      "biggest_distance_to_start": 150.67,
+      "gated_vul_points": 4
+    },
+  "vectors": [
+    {
+      "time_ms": 0,
+      "px": 0,
+      "py": 0,
+      "pz": 0
+      "vx": 0,
+      "vy": 0,
+      "vz": 0
     },
     {
-      "time": 1,
-      "x": 1,
-      "y": 2,
-      "z": 3
-    }, 
+      "time_ms": 5,
+      "px": 0,
+      "py": 0,
+      "pz": 0
+      "vx": 0,
+      "vy": 0,
+      "vz": 0
+    },
     {
-      "time": 2,
-      "x": 2,
-      "y": 4,
-      "z": 6
+      "time_ms": 10,
+      "px": 0,
+      "py": 0,
+      "pz": 0
+      "vx": 0,
+      "vy": 0,
+      "vz": 0
     }
   ]
 }
