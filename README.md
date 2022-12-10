@@ -82,15 +82,23 @@ None
 ## Database
 ### Users
 ```
-+---------+---------+-----+------+------+------+------+------+
-| user_id | time_ms | px  | py   | pz   | vx   | vy   | vz   |
-+---------+---------+-----+------+------+------+------+------+
-|       1 |       0 |   0 |    0 |    0 |    0 |    0 |    0 |
-|       1 |       1 | 0.2 |  0.3 |  0.4 |  0.5 |  0.6 |  0.7 |
-|       1 |       2 | 0.4 |  0.6 |  0.8 |  0.1 | 0.12 | 0.14 |
-|       1 |       3 | 0.6 |  0.9 | 0.16 | 0.15 | 0.18 | 0.21 |
-|       1 |       4 | 0.8 | 0.12 |  0.2 |  0.2 | 0.24 | 0.28 |
-+---------+---------+-----+------+------+------+------+------+
++-------------------------------+--------------+------+-----+---------+----------------+
+| Field                         | Type         | Null | Key | Default | Extra          |
++-------------------------------+--------------+------+-----+---------+----------------+
+| user_id                       | int          | NO   | PRI | NULL    | auto_increment |
+| age                           | int          | YES  |     | NULL    |                |
+| flying_minutes                | int          | YES  |     | NULL    |                |
+| gender                        | varchar(1)   | YES  |     | NULL    |                |
+| licences                      | varchar(255) | YES  |     | NULL    |                |
+| time_overflying_people_ms     | double       | YES  |     | NULL    |                |
+| number_overflown_people       | int          | YES  |     | NULL    |                |
+| min_dist_to_nearest_structure | double       | YES  |     | NULL    |                |
+| min_dist_to_nearest_person    | double       | YES  |     | NULL    |                |
+| avg_dist_to_intruder          | double       | YES  |     | NULL    |                |
+| max_dist_to_start             | double       | YES  |     | NULL    |                |
+| gated_vul_points              | int          | YES  |     | NULL    |                |
++-------------------------------+--------------+------+-----+---------+----------------+
+
 ```
 ### Vectors
 ```
