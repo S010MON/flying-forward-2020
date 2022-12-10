@@ -15,14 +15,13 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   app:
-    build: ./app           # Where the Dockerfile is stored
+    build: ./app
     restart: always
-
+    environment:
+      DEBUG: 1
     volumes:
       - ./app:/app
-
     links:
       - db
-
     ports:
       - "5000:5000"

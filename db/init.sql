@@ -7,6 +7,7 @@ CREATE TABLE Users (
     flying_minutes INT,
     gender VARCHAR(1),
     licences VARCHAR(255),
+    map VARCHAR(255),
     time_overflying_people_ms INT,
     number_overflown_people INT,
     min_dist_to_nearest_structure DOUBLE,
@@ -29,9 +30,9 @@ CREATE TABLE Vectors (
     PRIMARY KEY (user_id, time_ms)
     );
 
-INSERT INTO Users (age, flying_minutes, gender, licences) VALUES
-        (29, 10, "m", "a1 & a3"),
-        (18, 0, "f", null);
+INSERT INTO Users (age, flying_minutes, gender, licences, map) VALUES
+        (29, 10, "m", "a1 & a3", "intruder"),
+        (18, 0, "f", null, null);
 
 INSERT INTO Vectors (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES
         (1, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),

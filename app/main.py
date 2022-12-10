@@ -23,7 +23,7 @@ app = FastAPI()
 
 class UserData(BaseModel):
     age: int
-    flying_exp_min: int
+    flying_exp_mins: int
     gender: str
     license: str
 
@@ -36,6 +36,7 @@ class Summary(BaseModel):
     avg_dist_to_intruder: float
     max_dist_to_start: float
     gated_vul_points: int
+
 
 class Vector(BaseModel):
     time_ms: int
@@ -82,17 +83,18 @@ async def home():
 @app.get("/api/count", status_code=200)
 async def get_count():
     counters['test'] += 1
-    return {"test_count", counters['test']}
+    return {"test_count": counters['test']}
 
 
 @app.post("/api/dump", status_code=200)
 async def post_data(d: DataDump, request: Request):
-
     # Validate Age
-    if 0 < d.user_data.age < 100:
+    if 0 > d.user_data.age > 100:
         raise HTTPException(status_code=400, detail="Age outside of normal bounds")
 
-    if d.user_data.gender is not 'm' or d.user_data.gender is not 'f' or d.user_data.gender is not 'o':
+    print(d.user_data.gender)
+
+    if d.user_data.gender != 'm' and d.user_data.gender != 'f' and d.user_data.gender != 'o':
         raise HTTPException(status_code=400, detail="Gender must be male (m), female (f), or other (o)")
 
     user_id = add_new_user(d)
@@ -105,50 +107,50 @@ def add_new_user(d: DataDump):
     Add a new user and return the integer user_id from the new user
     """
     query = f"INSERT INTO Users " \
-                f"(age, " \
-                f"flying_minutes, " \
-                f"gender, " \
-                f"licences, " \
-                f"time_overflying_people_ms, " \
-                f"number_overflown_people, " \
-                f"min_dist_to_nearest_structure, " \
-                f"min_dist_to_nearest_person, " \
-                f"avg_dist_to_intruder, "\
-                f"max_dist_to_start, " \
-                f"gated_vul_points)" \
+            f"(age, " \
+            f"flying_minutes, " \
+            f"gender, " \
+            f"licences, " \
+            f"time_overflying_people_ms, " \
+            f"number_overflown_people, " \
+            f"min_dist_to_nearest_structure, " \
+            f"min_dist_to_nearest_person, " \
+            f"avg_dist_to_intruder, " \
+            f"max_dist_to_start, " \
+            f"gated_vul_points," \
+            f"map)" \
             f"VALUES " \
-                f"({d.user_data.age}, " \
-                f"{d.user_data.flying_exp_min}, " \
-                f"\"{d.user_data.gender}\", " \
-                f"\"{d.user_data.license}\", " \
-                f"{d.summary.time_overflying_people_ms}, " \
-                f"{d.summary.number_overflown_people}, " \
-                f"{d.summary.min_dist_to_nearest_structure}, " \
-                f"{d.summary.min_dist_to_nearest_person}, "\
-                f"{d.summary.avg_dist_to_intruder}, " \
-                f"{d.summary.max_dist_to_start}, " \
-                f"{d.summary.gated_vul_points}, " \
-                f"\"{d.map}\");"
+            f"({d.user_data.age}, " \
+            f"{d.user_data.flying_exp_mins}, " \
+            f"\"{d.user_data.gender}\", " \
+            f"\"{d.user_data.license}\", " \
+            f"{d.summary.time_overflying_people_ms}, " \
+            f"{d.summary.number_overflown_people}, " \
+            f"{d.summary.min_dist_to_nearest_structure}, " \
+            f"{d.summary.min_dist_to_nearest_person}, " \
+            f"{d.summary.avg_dist_to_intruder}, " \
+            f"{d.summary.max_dist_to_start}, " \
+            f"{d.summary.gated_vul_points}, " \
+            f"\"{d.map}\");"
     cursor.execute(query)
 
     # Fetch new session_id
     query = "SELECT LAST_INSERT_ID()";
     cursor.execute(query)
     result = cursor.fetchone()
-    return int(result)
+    return result[0]
 
 
 def add_vector(user_id: int, vector: Vector):
-    query = f"INSERT INTO Users (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES (" \
+    query = f"INSERT INTO Vectors (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES (" \
             f"{user_id}," \
-            f"{vector.time_ms}" \
-            f"{vector.px}" \
-            f"{vector.py}"\
-            f"{vector.pz}" \
-            f"{vector.vx}" \
-            f"{vector.vy}" \
-            f"{vector.vz}" \
-            f");"
+            f"{vector.time_ms}," \
+            f"{vector.px}," \
+            f"{vector.py}," \
+            f"{vector.pz}," \
+            f"{vector.vx}," \
+            f"{vector.vy}," \
+            f"{vector.vz});"
     cursor.execute(query)
 
 

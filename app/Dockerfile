@@ -19,5 +19,5 @@ EXPOSE 5000
 ADD . .
 WORKDIR .
 
-# Run the server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]
+# Run the server (Don't forget reload to restart on changes!)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000", "--reload"]

@@ -89,7 +89,8 @@ None
 | flying_minutes                | int          | YES  |     | NULL    |                |
 | gender                        | varchar(1)   | YES  |     | NULL    |                |
 | licences                      | varchar(255) | YES  |     | NULL    |                |
-| time_overflying_people_ms     | double       | YES  |     | NULL    |                |
+| map                           | varchar(255) | YES  |     | NULL    |                |
+| time_overflying_people_ms     | int          | YES  |     | NULL    |                |
 | number_overflown_people       | int          | YES  |     | NULL    |                |
 | min_dist_to_nearest_structure | double       | YES  |     | NULL    |                |
 | min_dist_to_nearest_person    | double       | YES  |     | NULL    |                |
@@ -97,7 +98,6 @@ None
 | max_dist_to_start             | double       | YES  |     | NULL    |                |
 | gated_vul_points              | int          | YES  |     | NULL    |                |
 +-------------------------------+--------------+------+-----+---------+----------------+
-
 ```
 ### Vectors
 ```
