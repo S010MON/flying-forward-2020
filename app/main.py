@@ -73,7 +73,7 @@ counters = {}
 @app.on_event("startup")
 async def startup_event():
     counters['test'] = 0
-    counters['user'] = 2
+    counters['user'] = 3
 
 
 @app.get("/", status_code=200)
@@ -82,9 +82,18 @@ async def home():
 
 
 @app.get("/api/count", status_code=200)
-async def get_count():
+async def get_test_count():
     counters['test'] += 1
     return {"test_count": counters['test']}
+
+
+@app.get("/api/users", status_code=200)
+async def get_total_user_count():
+    query = "SELECT user_id FROM Users;"
+    cursor.execute(query)
+    cursor.fetchall()
+    total = cursor.rowcount
+    return {"total_users": total}
 
 
 @app.post("/api/dump", status_code=200)
@@ -107,34 +116,8 @@ async def post_data(d: DataDump, request: Request):
             "user_id": user_id}
 
 
-def add_new_user(d: DataDump):
-    """
-    Add a new user and return the integer user_id from the new user
-    """
-    # Fetch new user_id
-    query = f"INSERT INTO Users (age, flying_minutes, gender, licences,  time_overflying_people_ms, number_overflown_people, " \
-            f"min_dist_to_nearest_structure, min_dist_to_nearest_person, avg_dist_to_intruder, max_dist_to_start, " \
-            f"gated_vul_points, map) VALUES " \
-            f"({d.user_data.age}, " \
-            f"{d.user_data.flying_exp_mins}, " \
-            f"\"{d.user_data.gender}\", " \
-            f"\"{d.user_data.license}\", " \
-            f"{d.summary.time_overflying_people_ms}, " \
-            f"{d.summary.number_overflown_people}, " \
-            f"{d.summary.min_dist_to_nearest_structure}, " \
-            f"{d.summary.min_dist_to_nearest_person}, " \
-            f"{d.summary.avg_dist_to_intruder}, " \
-            f"{d.summary.max_dist_to_start}, " \
-            f"{d.summary.gated_vul_points}, " \
-            f"\"{d.map}\");"
-    cursor.execute(query)
-    user_id = counters['user']
-    counters['user'] += 1
-    return user_id
-
-
-@app.get("/get_vectors/{user_id}", status_code=200)
-async def get_data_by_user_id(user_id: int):
+@app.get("/api/get_vectors/{user_id}", status_code=200)
+async def get_vectors_by_user_id(user_id: int):
     query = f"SELECT * FROM Users where user_id = {user_id}"
     cursor.execute(query)
     if not cursor.fetchone():
@@ -155,17 +138,41 @@ async def get_data_by_user_id(user_id: int):
     return response
 
 
-@app.get("/pull/{password}", status_code=200)
-async def pull_data(password: str):
-    query = "SELECT * FROM Users"
+@app.get("/api/user/{user_id}", status_code=200)
+async def get_user_data_by_user_id(user_id: int):
+    query = f"SELECT * FROM Users WHERE user_id = {user_id}"
     cursor.execute(query)
-    result = cursor.fetchall()
-    D = {}
-    i = 0
-    for line in result:
-        D[i] = result
+    result = cursor.fetchone()
+    if not result:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {user_id: result}
 
-    return D
+
+def add_new_user(d: DataDump):
+    """
+    Add a new user and return the integer user_id from the new user
+    """
+    # Fetch new user_id
+    query = f"""INSERT INTO Users (age, flying_minutes, gender, licences,  time_overflying_people_ms,
+            number_overflown_people, min_dist_to_nearest_structure, min_dist_to_nearest_person, avg_dist_to_intruder,
+            max_dist_to_start, gated_vul_points, map) VALUES
+            ({d.user_data.age},
+            {d.user_data.flying_exp_mins},
+            \"{d.user_data.gender}\",
+            \"{d.user_data.license}\",
+            {d.summary.time_overflying_people_ms},
+            {d.summary.number_overflown_people},
+            {d.summary.min_dist_to_nearest_structure},
+            {d.summary.min_dist_to_nearest_person},
+            {d.summary.avg_dist_to_intruder},
+            {d.summary.max_dist_to_start},
+            {d.summary.gated_vul_points},
+            \"{d.map}\");"""
+    cursor.execute(query)
+
+    cursor.execute("SELECT LAST_INSERT_ID();")
+    result = cursor.fetchone()
+    return result[0]
 
 
 def add_vector(user_id: int, vector: Vector):
