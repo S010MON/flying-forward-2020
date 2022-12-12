@@ -106,7 +106,6 @@ async def post_data(d: DataDump, request: Request):
         raise HTTPException(status_code=400, detail="Gender must be male (m), female (f), or other (o)")
 
     user_id = add_new_user(d)
-    print(f"INFO:     user:{user_id} posted {len(d.vectors)} vectors")
     for v in d.vectors:
         add_vector(user_id, v)
 
@@ -175,7 +174,6 @@ def add_new_user(d: DataDump):
 
 
 def add_vector(user_id: int, vector: Vector):
-    print(f"INFO:     {user_id}: {vector.time_ms} - {vector.px}, {vector.py}, {vector.pz}")
     query = f"INSERT INTO Vectors (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES (" \
             f"{user_id}," \
             f"{vector.time_ms}," \
