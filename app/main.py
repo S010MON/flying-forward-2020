@@ -166,6 +166,7 @@ def add_new_user(d: DataDump):
             {d.summary.gated_vul_points},
             \"{d.map}\");"""
     cursor.execute(query)
+    cnx.commit()
 
     cursor.execute("SELECT LAST_INSERT_ID();")
     result = cursor.fetchone()
@@ -182,7 +183,11 @@ def add_vector(user_id: int, vector: Vector):
             f"{vector.vx}," \
             f"{vector.vy}," \
             f"{vector.vz});"
-    cursor.execute(query)
+    try:
+        cursor.execute(query)
+        cnx.commit()
+    except:
+        raise HTTPException(status_code=400, detail=f"Failed to save {vector} to {user_id}")
 
 
 if __name__ == '__main__':
