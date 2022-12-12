@@ -112,7 +112,6 @@ def add_new_user(d: DataDump):
     Add a new user and return the integer user_id from the new user
     """
     # Fetch new user_id
-    counters['user'] += 1
     query = f"INSERT INTO Users (age, flying_minutes, gender, licences,  time_overflying_people_ms, number_overflown_people, " \
             f"min_dist_to_nearest_structure, min_dist_to_nearest_person, avg_dist_to_intruder, max_dist_to_start, " \
             f"gated_vul_points, map) VALUES " \
@@ -129,7 +128,9 @@ def add_new_user(d: DataDump):
             f"{d.summary.gated_vul_points}, " \
             f"\"{d.map}\");"
     cursor.execute(query)
-    return counters['user']
+    user_id = counters['user']
+    counters['user'] += 1
+    return user_id
 
 
 @app.get("/get_vectors/{user_id}", status_code=200)
@@ -138,7 +139,6 @@ async def get_data_by_user_id(user_id: int):
     cursor.execute(query)
     if not cursor.fetchone():
         return HTTPException(status_code=404, detail="user not found")
-
 
     query = f"SELECT time_ms, px, py, px, vx, vy, vz FROM Vectors WHERE user_id = {user_id}"
     cursor.execute(query)
