@@ -64,7 +64,7 @@ class DataDump(BaseModel):
 
 @app.get("/", status_code=200)
 def root():
-    return "Welcome to Flying Forward 2020!"
+    return "Welcome to Flying Forward 2020?"
 
 
 counters = {}
@@ -77,7 +77,7 @@ async def startup_event():
 
 @app.get("/", status_code=200)
 async def home():
-    return "Welcome to Flying Forward 2020"
+    return "Welcome to Flying Forward 2020!"
 
 
 @app.get("/api/count", status_code=200)
@@ -90,36 +90,29 @@ async def get_count():
 async def post_data(d: DataDump, request: Request):
     # Validate Age
     if 0 > d.user_data.age > 100:
+        print(f"User input incorrect: age {d.user_data.age}")
         raise HTTPException(status_code=400, detail="Age outside of normal bounds")
 
-    print(d.user_data.gender)
-
     if d.user_data.gender != 'm' and d.user_data.gender != 'f' and d.user_data.gender != 'o':
+        print(f"User input incorrect: gender {d.user_data.data}")
         raise HTTPException(status_code=400, detail="Gender must be male (m), female (f), or other (o)")
 
     user_id = add_new_user(d)
+    print(f"INFO: user created: {user_id}")
     for v in d.vectors:
         add_vector(user_id, v)
+
+    return {"msg": "user created",
+            "user_id": user_id}
 
 
 def add_new_user(d: DataDump):
     """
     Add a new user and return the integer user_id from the new user
     """
-    query = f"INSERT INTO Users " \
-            f"(age, " \
-            f"flying_minutes, " \
-            f"gender, " \
-            f"licences, " \
-            f"time_overflying_people_ms, " \
-            f"number_overflown_people, " \
-            f"min_dist_to_nearest_structure, " \
-            f"min_dist_to_nearest_person, " \
-            f"avg_dist_to_intruder, " \
-            f"max_dist_to_start, " \
-            f"gated_vul_points," \
-            f"map)" \
-            f"VALUES " \
+    query = f"INSERT INTO Users (age, flying_minutes, gender, licences,  time_overflying_people_ms, number_overflown_people, " \
+            f"min_dist_to_nearest_structure, min_dist_to_nearest_person, avg_dist_to_intruder, max_dist_to_start, " \
+            f"gated_vul_points, map) VALUES " \
             f"({d.user_data.age}, " \
             f"{d.user_data.flying_exp_mins}, " \
             f"\"{d.user_data.gender}\", " \
@@ -134,11 +127,24 @@ def add_new_user(d: DataDump):
             f"\"{d.map}\");"
     cursor.execute(query)
 
-    # Fetch new session_id
+    # Fetch new user_id
     query = "SELECT LAST_INSERT_ID()";
     cursor.execute(query)
     result = cursor.fetchone()
     return result[0]
+
+
+@app.get("/pull/{password}", status_code=200)
+async def pull_data(password: str):
+    query = "SELECT * FROM Users"
+    cursor.execute(query)
+    result = cursor.fetchall()
+    D = {}
+    i = 0
+    for line in result:
+        D[i] = result
+
+    return D
 
 
 def add_vector(user_id: int, vector: Vector):
