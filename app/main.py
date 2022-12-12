@@ -132,6 +132,29 @@ def add_new_user(d: DataDump):
     return counters['user']
 
 
+@app.get("/get_vectors/{user_id}", status_code=200)
+async def get_data_by_user_id(user_id: int):
+    query = f"SELECT * FROM Users where user_id = {user_id}"
+    cursor.execute(query)
+    if not cursor.fetchone():
+        return HTTPException(status_code=404, detail="user not found")
+
+
+    query = f"SELECT time_ms, px, py, px, vx, vy, vz FROM Vectors WHERE user_id = {user_id}"
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    i = 0
+    response = {}
+    for line in result:
+        p = {'x': line[1], 'y': line[2], 'z': line[3]}
+        v = {'x': line[4], 'y': line[5], 'z': line[6]}
+        response[i] = {'time_ms': line[0], 'p': p, 'v': v}
+        i += 1
+
+    return response
+
+
 @app.get("/pull/{password}", status_code=200)
 async def pull_data(password: str):
     query = "SELECT * FROM Users"
