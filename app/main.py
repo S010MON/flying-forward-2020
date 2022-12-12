@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, Response, HTTPException
 from pydantic import BaseModel
 from typing import List
 from mysql.connector import (connection)
@@ -106,7 +106,8 @@ async def get_total_user_count():
 
 
 @app.post("/api/dump", status_code=200)
-async def post_data(d: DataDump, request: Request):
+async def post_data(d: DataDump, request: Request, response: Response):
+
     # Validate Age
     if 0 > d.user_data.age > 100:
         raise HTTPException(status_code=400, detail="Age outside of normal bounds")
@@ -118,6 +119,7 @@ async def post_data(d: DataDump, request: Request):
     for v in d.vectors:
         add_vector(user_id, v)
 
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return {"msg": "user created",
             "user_id": user_id}
 
