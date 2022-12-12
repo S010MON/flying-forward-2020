@@ -100,15 +100,15 @@ async def get_total_user_count():
 async def post_data(d: DataDump, request: Request):
     # Validate Age
     if 0 > d.user_data.age > 100:
-        print(f"User input incorrect: age {d.user_data.age}")
+        print(f"INFO:   User input incorrect: age {d.user_data.age}")
         raise HTTPException(status_code=400, detail="Age outside of normal bounds")
 
     if d.user_data.gender != 'm' and d.user_data.gender != 'f' and d.user_data.gender != 'o':
-        print(f"User input incorrect: gender {d.user_data.data}")
+        print(f"INFO:   User input incorrect: gender {d.user_data.data}")
         raise HTTPException(status_code=400, detail="Gender must be male (m), female (f), or other (o)")
 
     user_id = add_new_user(d)
-    print(f"INFO: user created: {user_id}")
+    print(f"INFO:   user created: {user_id}")
     for v in d.vectors:
         add_vector(user_id, v)
 
