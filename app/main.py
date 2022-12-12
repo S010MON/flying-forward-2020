@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List
 from mysql.connector import (connection)
 import mysql.connector
+from starlette.middleware.cors import CORSMiddleware
 
 # Docker config
 config = {'user': 'root',
@@ -20,6 +21,14 @@ cursor = cnx.cursor()
 # Build REST API
 app = FastAPI()
 
+# Set Cross Origin Policy
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class UserData(BaseModel):
     age: int
