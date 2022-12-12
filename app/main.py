@@ -174,6 +174,7 @@ def add_new_user(d: DataDump):
 
 
 def add_vector(user_id: int, vector: Vector):
+    print(f"{user_id}: {vector.time_ms} - {vector.px}, {vector.py}, {vector.pz}")
     query = f"INSERT INTO Vectors (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES (" \
             f"{user_id}," \
             f"{vector.time_ms}," \
