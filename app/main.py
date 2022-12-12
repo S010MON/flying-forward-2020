@@ -73,6 +73,7 @@ counters = {}
 @app.on_event("startup")
 async def startup_event():
     counters['test'] = 0
+    counters['user'] = 2
 
 
 @app.get("/", status_code=200)
@@ -110,6 +111,8 @@ def add_new_user(d: DataDump):
     """
     Add a new user and return the integer user_id from the new user
     """
+    # Fetch new user_id
+    counters['user'] += 1
     query = f"INSERT INTO Users (age, flying_minutes, gender, licences,  time_overflying_people_ms, number_overflown_people, " \
             f"min_dist_to_nearest_structure, min_dist_to_nearest_person, avg_dist_to_intruder, max_dist_to_start, " \
             f"gated_vul_points, map) VALUES " \
@@ -126,12 +129,7 @@ def add_new_user(d: DataDump):
             f"{d.summary.gated_vul_points}, " \
             f"\"{d.map}\");"
     cursor.execute(query)
-
-    # Fetch new user_id
-    query = "SELECT LAST_INSERT_ID()";
-    cursor.execute(query)
-    result = cursor.fetchone()
-    return result[0]
+    return counters['user']
 
 
 @app.get("/pull/{password}", status_code=200)
