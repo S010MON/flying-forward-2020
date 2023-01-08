@@ -30,6 +30,12 @@ CREATE TABLE Vectors (
     PRIMARY KEY (user_id, time_ms)
     );
 
+CREATE TABLE Admins(
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (username)
+);
+
 INSERT INTO Users (age, flying_minutes, gender, licences, map) VALUES
         (29, 10, "m", "a1 & a3", "intruder"),
         (18, 0, "f", null, null);
@@ -40,5 +46,3 @@ INSERT INTO Vectors (user_id, time_ms, px, py, pz, vx, vy, vz) VALUES
         (1, 2, 0.4, 0.6, 0.8, 0.10, 0.12, 0.14),
         (1, 3, 0.6, 0.9, 0.16, 0.15, 0.18, 0.21),
         (1, 4, 0.8, 0.12, 0.20, 0.20, 0.24, 0.28);
-
-
